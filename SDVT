@@ -1,0 +1,87 @@
+--// SDVT Simple TP Menu v1.3
+
+-- Tạo ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "SDVT_TP_MENU"
+gui.ResetOnSpawn = false
+gui.Parent = game.CoreGui
+
+-- Khung menu
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 260, 0, 180)
+frame.Position = UDim2.new(0.5, -130, 0.4, -90)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+-- Tiêu đề
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 35)
+title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+title.BorderSizePixel = 0
+title.Text = "⚡ SDVT Teleport Menu"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+-- Nút 1: TP Best Farm Lv
+local tp1 = Instance.new("TextButton")
+tp1.Size = UDim2.new(1, -20, 0, 50)
+tp1.Position = UDim2.new(0, 10, 0, 45)
+tp1.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+tp1.Text = "1️⃣  Tp To Zone Best Farm Lv"
+tp1.TextColor3 = Color3.fromRGB(255,255,255)
+tp1.Font = Enum.Font.GothamBold
+tp1.TextSize = 16
+tp1.Parent = frame
+
+-- Nút 2: TP Best Farm Money
+local tp2 = Instance.new("TextButton")
+tp2.Size = UDim2.new(1, -20, 0, 50)
+tp2.Position = UDim2.new(0, 10, 0, 105)
+tp2.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+tp2.Text = "2️⃣  Tp To Best Farm Money (Aurora/Lumin)"
+tp2.TextColor3 = Color3.fromRGB(255,255,255)
+tp2.Font = Enum.Font.GothamBold
+tp2.TextSize = 14
+tp2.Parent = frame
+
+-- Notify function
+local function Notify(msg)
+    pcall(function()
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "SDVT Notice";
+            Text = msg;
+            Duration = 3;
+        })
+    end)
+end
+
+-- Tọa độ
+local pos1 = Vector3.new(1377.12, -603.74, 2338.20)
+local pos2 = Vector3.new(-1092.52, -337.29, -4174.61) -- tọa độ bro gửi
+
+-- Hàm TP
+local function TeleportTo(position)
+    local plr = game.Players.LocalPlayer
+    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+        
+        plr.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+
+        Notify("Teleport thành công!")
+
+        gui:Destroy() -- auto tắt menu
+    end
+end
+
+-- Event
+tp1.MouseButton1Click:Connect(function()
+    TeleportTo(pos1)
+end)
+
+tp2.MouseButton1Click:Connect(function()
+    TeleportTo(pos2)
+end)
