@@ -1,0 +1,15 @@
+-- ⚡ SDVT One-Shot Teleport (Executor)
+-- Teleport 1 lần rồi dừng
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+
+local targetPos = Vector3.new(-1947.33, 154.50, 639.63)
+
+-- Đợi HRP
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+-- Teleport
+hrp.CFrame = CFrame.new(targetPos)
+
+return
