@@ -1,0 +1,128 @@
+--// SDVT Neon TP Menu v2 – Glow + Blur + Gradient
+--// By SDVT STD & Bum Roblox 💎
+
+-- ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "SDVT_TP_MENU"
+gui.Parent = game.CoreGui
+gui.ResetOnSpawn = false
+
+-- Blur Background
+local blur = Instance.new("BlurEffect", game.Lighting)
+blur.Size = 3
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 210)
+frame.Position = UDim2.new(0.5, -150, 0.4, -105)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.35
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+-- Neon Glow Border
+local glow = Instance.new("UIStroke")
+glow.Thickness = 2.5
+glow.Color = Color3.fromRGB(0, 255, 255)
+glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Outside
+glow.Parent = frame
+
+-- Gradient Background
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 40)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 10, 60))
+}
+gradient.Rotation = 45
+gradient.Parent = frame
+
+-- Corner
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 45)
+title.Text = "⚡ SDVT Teleport Menu"
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(0, 255, 255)
+title.BackgroundTransparency = 1
+title.Parent = frame
+
+-- Create fancy button
+local function MakeButton(text, y)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -30, 0, 45)
+    btn.Position = UDim2.new(0, 15, 0, y)
+    btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    btn.BackgroundTransparency = 0.2
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 18
+
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+
+    local neon = Instance.new("UIStroke", btn)
+    neon.Thickness = 1.8
+    neon.Color = Color3.fromRGB(0, 255, 255)
+    neon.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+    -- Hover effect
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(0, 50, 70)
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    end)
+
+    btn.Parent = frame
+    return btn
+end
+
+-- Buttons
+local tp1 = MakeButton("1️⃣  Tp To Zone Best Farm Lv", 55)
+local tp2 = MakeButton("2️⃣  Tp To Best Farm Money (Aurora/Lumin)", 115)
+
+-- Footer Credit
+local credit = Instance.new("TextLabel")
+credit.Size = UDim2.new(1, 0, 0, 30)
+credit.Position = UDim2.new(0, 0, 1, -30)
+credit.Text = "By SDVT STD & Bum Roblox"
+credit.TextColor3 = Color3.fromRGB(100, 255, 255)
+credit.Font = Enum.Font.GothamSemibold
+credit.TextScaled = true
+credit.BackgroundTransparency = 1
+credit.Parent = frame
+
+-- Notify
+local function Notify(msg)
+    pcall(function()
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "SDVT Notice";
+            Text = msg;
+            Duration = 3;
+        })
+    end)
+end
+
+-- Coordinates
+local pos1 = Vector3.new(1377.12, -603.74, 2338.20)
+local pos2 = Vector3.new(-1092.52, -337.29, -4174.61)
+
+-- Teleport Handler
+local function TeleportTo(pos)
+    local plr = game.Players.LocalPlayer
+    local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+
+    if hrp then
+        hrp.CFrame = CFrame.new(pos)
+        Notify("Teleport thành công!")
+
+        gui:Destroy()
+        blur:Destroy()
+    end
+end
+
+tp1.MouseButton1Click:Connect(function() TeleportTo(pos1) end)
+tp2.MouseButton1Click:Connect(function() TeleportTo(pos2) end)
