@@ -1,57 +1,40 @@
---// 🌌 SDVT Neon TP Menu v2.0 (UI đẹp nâng cấp)
---// By SDVT STD & Bum Roblox
+-- Xóa GUI cũ
+pcall(function() game.CoreGui.SDVT_MENU:Destroy() end)
 
--- Bảo vệ khỏi lỗi GUI trùng
-pcall(function() game.CoreGui.SDVT_TP_MENU:Destroy() end)
-
--- Tạo ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "SDVT_TP_MENU"
-gui.ResetOnSpawn = false
-gui.Parent = game.CoreGui
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "SDVT_MENU"
 
 local TweenService = game:GetService("TweenService")
 
--- MAIN FRAME (trong suốt + neon + glow)
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 310, 0, 220)
-frame.Position = UDim2.new(0.5, -155, 0.4, -110)
-frame.BackgroundTransparency = 0.2
-frame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-frame.Parent = gui
+-- MAIN FRAME LỚN
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 400, 0, 400) -- bảng to
+main.Position = UDim2.new(0.5, -200, 0.4, -200)
+main.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+main.BorderSizePixel = 0
+main.ClipsDescendants = true
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 20)
 
--- Glow blur nền
-local glow = Instance.new("ImageLabel", frame)
-glow.Size = UDim2.new(1, 40, 1, 40)
-glow.Position = UDim2.new(0, -20, 0, -20)
+-- Glow lấp lánh
+local glow = Instance.new("ImageLabel", main)
+glow.Size = UDim2.new(1, 100, 1, 100)
+glow.Position = UDim2.new(0, -50, 0, -50)
 glow.Image = "rbxassetid://49950213"
-glow.ImageColor3 = Color3.fromRGB(0, 200, 255)
-glow.ImageTransparency = 0.85
+glow.ImageColor3 = Color3.fromRGB(0, 255, 255)
+glow.ImageTransparency = 0.9
 glow.ScaleType = Enum.ScaleType.Stretch
 glow.ZIndex = 0
 
--- Bo góc
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 16)
-
--- Viền neon
-local stroke = Instance.new("UIStroke", frame)
-stroke.Color = Color3.fromRGB(0, 255, 255)
-stroke.Thickness = 2
-stroke.Transparency = 0.15
-
--- Gradient Aurora
-local grad = Instance.new("UIGradient", frame)
+-- Gradient Aurora chuyển động
+local grad = Instance.new("UIGradient", main)
 grad.Color = ColorSequence.new{
     ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 255)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 0, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 150, 255))
+    ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 0, 255)),
+    ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 128, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 150))
 }
 grad.Rotation = 45
 
--- Animation xoay gradient
 task.spawn(function()
     while task.wait(0.05) do
         grad.Rotation += 1
@@ -59,100 +42,121 @@ task.spawn(function()
 end)
 
 -- TITLE
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 40)
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 60)
+title.Position = UDim2.new(0, 0, 0, 10)
 title.BackgroundTransparency = 1
-title.Text = "⚡ SDVT NEON TP MENU"
+title.Text = "⚡Tp Farm"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 20
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 28
 title.ZIndex = 5
 
--- BUTTON TEMPLATE
-local function CreateBtn(text)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -30, 0, 50)
-    btn.Position = UDim2.new(0, 15, 0, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    btn.BackgroundTransparency = 0.15
-    btn.Text = text
+-- Title Glow
+local titleStroke = Instance.new("UIStroke", title)
+titleStroke.Color = Color3.fromRGB(0, 255, 255)
+titleStroke.Thickness = 2
+titleStroke.Transparency = 0.3
+
+-- CLOSE BUTTON
+local close = Instance.new("TextButton", main)
+close.Size = UDim2.new(0, 40, 0, 40)
+close.Position = UDim2.new(1, -50, 0, 10)
+close.Text = "✖"
+close.BackgroundTransparency = 1
+close.Font = Enum.Font.GothamBold
+close.TextSize = 26
+close.TextColor3 = Color3.fromRGB(255, 80, 80)
+close.MouseButton1Click:Connect(function() gui:Destroy() end)
+
+-- BUTTON CREATOR
+local function CreateButton(txt, y)
+    local btn = Instance.new("TextButton", main)
+    btn.Size = UDim2.new(0.8, 0, 0, 50)
+    btn.Position = UDim2.new(0.1, 0, 0, y)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 16
+    btn.TextSize = 20
+    btn.Text = txt
     btn.AutoButtonColor = false
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 15)
 
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
-
-    local st = Instance.new("UIStroke", btn)
-    st.Color = Color3.fromRGB(0, 200, 255)
-    st.Thickness = 2
-    st.Transparency = 0.3
-
-    -- Hover Effect
+    -- Hover Effect neon
     btn.MouseEnter:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.15), {
-            BackgroundTransparency = 0.05
-        }):Play()
+        TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(50, 50, 80)}):Play()
     end)
     btn.MouseLeave:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.15), {
-            BackgroundTransparency = 0.15
-        }):Play()
+        TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 30, 50)}):Play()
     end)
 
     return btn
 end
 
--- BUTTON 1
-local tp1 = CreateBtn("1️⃣  TP To Zone Best Farm Lv")
-tp1.Parent = frame
-tp1.Position = UDim2.new(0, 15, 0, 55)
+----------------------------------------------------
+-- MAIN BUTTONS
+----------------------------------------------------
+local bZone = CreateButton("🔷 Mariana", 90)
+local bFarm = CreateButton("🌾 Farm", 160)
 
--- BUTTON 2
-local tp2 = CreateBtn("2️⃣  TP To Best Farm Money (Aurora/Lumin)")
-tp2.Parent = frame
-tp2.Position = UDim2.new(0, 15, 0, 115)
+----------------------------------------------------
+-- ZONE MENU
+----------------------------------------------------
+function openZoneMenu()
+    main:ClearAllChildren()
 
--- CREDIT
-local credit = Instance.new("TextLabel", frame)
-credit.Size = UDim2.new(1, 0, 0, 30)
-credit.Position = UDim2.new(0, 0, 1, -30)
-credit.BackgroundTransparency = 1
-credit.Text = "✨ By SDVT STD & Bum Roblox"
-credit.TextColor3 = Color3.fromRGB(0, 255, 255)
-credit.Font = Enum.Font.GothamBold
-credit.TextSize = 14
+    local t = title:Clone()
+    t.Parent = main
+    t.Text = "🌌 Zone Selector"
 
--- Notify
-local function Notify(msg)
-    pcall(function()
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "SDVT Notice";
-            Text = msg;
-            Duration = 3;
-        })
-    end)
-end
+    local x = close:Clone()
+    x.Parent = main
+    x.MouseButton1Click:Connect(function() gui:Destroy() end)
 
--- Tọa độ
-local pos1 = Vector3.new(1377.12, -603.74, 2338.20)
-local pos2 = Vector3.new(-1092.52, -337.29, -4174.61)
-
--- TP Function
-local function TeleportTo(position)
-    local plr = game.Players.LocalPlayer
-    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-        plr.Character.HumanoidRootPart.CFrame = CFrame.new(position)
-        Notify("Teleport thành công!")
-        gui:Destroy()
+    local function tp(v)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v)
     end
+
+    local z1 = CreateButton("Zone 1", 100)
+    z1.Parent = main
+    z1.MouseButton1Click:Connect(function() tp(Vector3.new(-3172.89, -2036.87, 4020.55)) end)
+
+    local z2 = CreateButton("Zone 2", 170)
+    z2.Parent = main
+    z2.MouseButton1Click:Connect(function() tp(Vector3.new(720.49, -3360.50, -1579.38)) end)
+
+    local z3 = CreateButton("Zone 3", 240)
+    z3.Parent = main
+    z3.MouseButton1Click:Connect(function() tp(Vector3.new(-13471.30, -11041.90, 167.35)) end)
 end
 
--- Button Bind
-tp1.MouseButton1Click:Connect(function()
-    TeleportTo(pos1)
-end)
+----------------------------------------------------
+-- FARM MENU
+----------------------------------------------------
+function openFarmMenu()
+    main:ClearAllChildren()
 
-tp2.MouseButton1Click:Connect(function()
-    TeleportTo(pos2)
-end)
+    local t = title:Clone()
+    t.Parent = main
+    t.Text = "🌾 Farm Zones"
+
+    local x = close:Clone()
+    x.Parent = main
+    x.MouseButton1Click:Connect(function() gui:Destroy() end)
+
+    local function tp(v)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v)
+    end
+
+    local f1 = CreateButton("🔥 Farm Lv Best", 100)
+    f1.Parent = main
+    f1.MouseButton1Click:Connect(function() tp(Vector3.new(-3172.89, -2036.87, 4020.55)) end)
+
+    local f2 = CreateButton("💰 Farm Lumin Money", 170)
+    f2.Parent = main
+    f2.MouseButton1Click:Connect(function() tp(Vector3.new(720.49, -3360.50, -1579.38)) end)
+end
+
+-- MAIN BUTTONS BIND
+bZone.MouseButton1Click:Connect(openZoneMenu)
+bFarm.MouseButton1Click:Connect(openFarmMenu)
