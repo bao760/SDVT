@@ -1,0 +1,231 @@
+--// ================================
+--// SDVT HUB – NEON UI PREMIUM
+--// ================================
+
+pcall(function() game.CoreGui.SDVTHUB:Destroy() end)
+
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "SDVT_NoShid_HUB"
+gui.ResetOnSpawn = false
+
+-- MAIN FRAME
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 480, 0, 390)
+main.Position = UDim2.new(0.5, -240, 0.5, -195)
+main.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+main.BorderSizePixel = 0
+
+local corner = Instance.new("UICorner", main)
+corner.CornerRadius = UDim.new(0, 16)
+
+-- OUTLINE NEON
+local outline = Instance.new("UIStroke", main)
+outline.Color = Color3.fromRGB(0, 255, 255)
+outline.Thickness = 2.4
+outline.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+-- MOVING GRADIENT BG
+local grad = Instance.new("UIGradient", main)
+grad.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0,255,255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100,0,255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,180,255))
+}
+grad.Rotation = 45
+
+task.spawn(function()
+    while true do
+        grad.Rotation += 1
+        task.wait(0.02)
+    end
+end)
+
+-- TITLE
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 55)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "⚡ SDVT HUB – UPDATE 1⚡"
+title.Font = Enum.Font.GothamBlack
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.TextSize = 28
+
+local tStroke = Instance.new("UIStroke", title)
+tStroke.Color = Color3.fromRGB(0,255,255)
+tStroke.Thickness = 1.8
+
+-- CLOSE BUTTON
+local close = Instance.new("TextButton", main)
+close.Size = UDim2.new(0, 40, 0, 40)
+close.Position = UDim2.new(1, -55, 0, 8)
+close.Text = "✖"
+close.BackgroundTransparency = 1
+close.Font = Enum.Font.GothamBlack
+close.TextSize = 28
+close.TextColor3 = Color3.fromRGB(255,90,90)
+close.MouseButton1Click:Connect(function() gui:Destroy() end)
+
+---------------------------------------------------------
+-- BUTTON CREATOR (NEON STYLE)
+---------------------------------------------------------
+local TweenService = game:GetService("TweenService")
+
+function CreateButton(text)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(0, 330, 0, 55)
+    b.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
+    b.BorderSizePixel = 0
+    b.Font = Enum.Font.GothamBold
+    b.TextSize = 22
+    b.TextColor3 = Color3.fromRGB(255,255,255)
+    b.Text = text
+    b.AutoButtonColor = false
+
+    local c = Instance.new("UICorner", b)
+    c.CornerRadius = UDim.new(0, 12)
+
+    local glow = Instance.new("UIStroke", b)
+    glow.Color = Color3.fromRGB(0, 255, 255)
+    glow.Thickness = 1.2
+    glow.Transparency = 0.7
+
+    -- HOVER EFFECT
+    b.MouseEnter:Connect(function()
+        TweenService:Create(b, TweenInfo.new(0.12), {
+            BackgroundColor3 = Color3.fromRGB(40, 40, 70)
+        }):Play()
+        TweenService:Create(glow, TweenInfo.new(0.12), {
+            Transparency = 0.25
+        }):Play()
+    end)
+
+    b.MouseLeave:Connect(function()
+        TweenService:Create(b, TweenInfo.new(0.12), {
+            BackgroundColor3 = Color3.fromRGB(22, 22, 35)
+        }):Play()
+        TweenService:Create(glow, TweenInfo.new(0.12), {
+            Transparency = 0.7
+        }):Play()
+    end)
+
+    return b
+end
+
+---------------------------------------------------------
+-- BACK BUTTON
+---------------------------------------------------------
+function CreateBackButton()
+    local b = CreateButton("◀ BACK")
+    b.Size = UDim2.new(0, 180, 0, 45)
+    b.Position = UDim2.new(0.5, -90, 1, -55)
+    return b
+end
+
+---------------------------------------------------------
+-- TELEPORT FUNCTION
+---------------------------------------------------------
+function tp(v)
+    player.Character.HumanoidRootPart.CFrame = CFrame.new(v)
+end
+
+---------------------------------------------------------
+-- MAIN MENU
+---------------------------------------------------------
+function openMainMenu()
+    for _,v in pairs(main:GetChildren()) do
+        if v ~= title and v ~= close then v:Destroy() end
+    end
+
+    local b1 = CreateButton("🌌 Mariana Zones")
+    b1.Position = UDim2.new(0.5, -165, 0.33, 0)
+    b1.Parent = main
+    b1.MouseButton1Click:Connect(openMarianaMenu)
+
+    local b2 = CreateButton("🌾 Farm Menu")
+    b2.Position = UDim2.new(0.5, -165, 0.57, 0)
+    b2.Parent = main
+    b2.MouseButton1Click:Connect(openFarmMenu)
+
+    local footer = Instance.new("TextLabel", main)
+    footer.Size = UDim2.new(1, 0, 0, 40)
+    footer.Position = UDim2.new(0, 0, 1, -40)
+    footer.BackgroundTransparency = 1
+    footer.Text = "⚡ SDVT Team | ChatGPT-5 & PGbao❣🤚 & WIN99"
+    footer.Font = Enum.Font.Gotham
+    footer.TextColor3 = Color3.fromRGB(200,200,255)
+    footer.TextSize = 16
+end
+
+---------------------------------------------------------
+-- MARIANA MENU
+---------------------------------------------------------
+function openMarianaMenu()
+    for _,v in pairs(main:GetChildren()) do
+        if v ~= title and v ~= close then v:Destroy() end
+    end
+
+    title.Text = "🌌 Mariana Zones"
+
+    local b1 = CreateButton("Zone 1")
+    b1.Position = UDim2.new(0.5, -165, 0.28, 0)
+    b1.Parent = main
+    b1.MouseButton1Click:Connect(function()
+        tp(Vector3.new(-3172.89, -2036.87, 4020.55))
+    end)
+
+    local b2 = CreateButton("Zone 2")
+    b2.Position = UDim2.new(0.5, -165, 0.48, 0)
+    b2.Parent = main
+    b2.MouseButton1Click:Connect(function()
+        tp(Vector3.new(720.49, -3360.50, -1579.38))
+    end)
+
+    local b3 = CreateButton("Zone 3")
+    b3.Position = UDim2.new(0.5, -165, 0.68, 0)
+    b3.Parent = main
+    b3.MouseButton1Click:Connect(function()
+        tp(Vector3.new(-13471.30, -11041.90, 167.35))
+    end)
+
+    local back = CreateBackButton()
+    back.Parent = main
+    back.MouseButton1Click:Connect(function()
+        title.Text = "⚡ SDVT HUB – UPDATE 1 ⚡"
+        openMainMenu()
+    end)
+end
+
+---------------------------------------------------------
+-- FARM MENU
+---------------------------------------------------------
+function openFarmMenu()
+    for _,v in pairs(main:GetChildren()) do
+        if v ~= title and v ~= close then v:Destroy() end
+    end
+
+    title.Text = "🌾 Farm Menu"
+
+    local f1 = CreateButton("🔥 Farm LV Best")
+    f1.Position = UDim2.new(0.5, -165, 0.33, 0)
+    f1.Parent = main
+    f1.MouseButton1Click:Connect(function()
+        tp(Vector3.new(-3172.89, -2036.87, 4020.55))
+    end)
+
+    local f2 = CreateButton("💰 Farm Lumin Money")
+    f2.Position = UDim2.new(0.5, -165, 0.57, 0)
+    f2.Parent = main
+    f2.MouseButton1Click:Connect(function()
+        tp(Vector3.new(720.49, -3360.50, -1579.38))
+    end)
+
+    local back = CreateBackButton()
+    back.Parent = main
+    back.MouseButton1Click:Connect(function()
+        title.Text = "⚡ SDVT HUB – UPDATE 1 ⚡"
+        openMainMenu()
+    end)
+end
+
+openMainMenu()
