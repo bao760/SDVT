@@ -1,162 +1,145 @@
--- Xóa GUI cũ
-pcall(function() game.CoreGui.SDVT_MENU:Destroy() end)
+--// ⭐ SDVT HUB – RAYFIELD UI PREMIUM VERSION
 
-local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "SDVT_MENU"
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Player = game.Players.LocalPlayer
 
-local TweenService = game:GetService("TweenService")
-
--- MAIN FRAME LỚN
-local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 400, 0, 400) -- bảng to
-main.Position = UDim2.new(0.5, -200, 0.4, -200)
-main.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-main.BorderSizePixel = 0
-main.ClipsDescendants = true
-Instance.new("UICorner", main).CornerRadius = UDim.new(0, 20)
-
--- Glow lấp lánh
-local glow = Instance.new("ImageLabel", main)
-glow.Size = UDim2.new(1, 100, 1, 100)
-glow.Position = UDim2.new(0, -50, 0, -50)
-glow.Image = "rbxassetid://49950213"
-glow.ImageColor3 = Color3.fromRGB(0, 255, 255)
-glow.ImageTransparency = 0.9
-glow.ScaleType = Enum.ScaleType.Stretch
-glow.ZIndex = 0
-
--- Gradient Aurora chuyển động
-local grad = Instance.new("UIGradient", main)
-grad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 255)),
-    ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 0, 255)),
-    ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 128, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 150))
-}
-grad.Rotation = 45
-
-task.spawn(function()
-    while task.wait(0.05) do
-        grad.Rotation += 1
-    end
-end)
-
--- TITLE
-local title = Instance.new("TextLabel", main)
-title.Size = UDim2.new(1, 0, 0, 60)
-title.Position = UDim2.new(0, 0, 0, 10)
-title.BackgroundTransparency = 1
-title.Text = "⚡SDVT #Update1"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.GothamBlack
-title.TextSize = 28
-title.ZIndex = 5
-
--- Title Glow
-local titleStroke = Instance.new("UIStroke", title)
-titleStroke.Color = Color3.fromRGB(0, 255, 255)
-titleStroke.Thickness = 2
-titleStroke.Transparency = 0.3
-
--- CLOSE BUTTON
-local close = Instance.new("TextButton", main)
-close.Size = UDim2.new(0, 40, 0, 40)
-close.Position = UDim2.new(1, -50, 0, 10)
-close.Text = "✖"
-close.BackgroundTransparency = 1
-close.Font = Enum.Font.GothamBold
-close.TextSize = 26
-close.TextColor3 = Color3.fromRGB(255, 80, 80)
-close.MouseButton1Click:Connect(function() gui:Destroy() end)
-
--- BUTTON CREATOR
-local function CreateButton(txt, y)
-    local btn = Instance.new("TextButton", main)
-    btn.Size = UDim2.new(0.8, 0, 0, 50)
-    btn.Position = UDim2.new(0.1, 0, 0, y)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 20
-    btn.Text = txt
-    btn.AutoButtonColor = false
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 15)
-
-    -- Hover Effect neon
-    btn.MouseEnter:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(50, 50, 80)}):Play()
-    end)
-    btn.MouseLeave:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(30, 30, 50)}):Play()
-    end)
-
-    return btn
+-- 🔮 Teleport System
+local function tp(v)
+    local char = Player.Character or Player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    hrp.CFrame = CFrame.new(v)
 end
 
-----------------------------------------------------
--- MAIN BUTTONS
-----------------------------------------------------
-local bZone = CreateButton("🔷 Mariana", 90)
-local bFarm = CreateButton("🌾 Farm", 160)
+-- 🌈 Premium Window
+local Window = Rayfield:CreateWindow({
+    Name = "⚡ SDVT HUB | Premium Edition",
+    LoadingTitle = "⚡ SDVT HUB",
+    LoadingSubtitle = "Injecting Premium UI...",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
 
-----------------------------------------------------
--- ZONE MENU
-----------------------------------------------------
-function openZoneMenu()
-    main:ClearAllChildren()
+-- ==========================================================
+-- 📘 INFO TAB
+-- ==========================================================
 
-    local t = title:Clone()
-    t.Parent = main
-    t.Text = "🌌 Zone Selector"
+local Tab1 = Window:CreateTab("📘 Info", 4483362458)
 
-    local x = close:Clone()
-    x.Parent = main
-    x.MouseButton1Click:Connect(function() gui:Destroy() end)
+Tab1:CreateParagraph({
+    Title = "✨ SDVT HUB - Premium",
+    Content = "• Developer: SDVT Team\n• Version: Premium Rayfield\n• Status: Working\n• Mode: Weekend Premium"
+})
 
-    local function tp(v)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v)
+Tab1:CreateSection("📢 System Status")
+
+Tab1:CreateLabel("✅ Rayfield UI Loaded")
+Tab1:CreateLabel("✅ Teleport System Ready")
+Tab1:CreateLabel("✅ No Errors Found")
+
+-- ==========================================================
+-- 🌌 MARIANA TAB
+-- ==========================================================
+
+local Tab2 = Window:CreateTab("🌌 Mariana", 4483362458)
+
+Tab2:CreateParagraph({
+    Title = "🌊 Mariana Teleporter",
+    Content = "Fast travel to deep zones"
+})
+
+Tab2:CreateSection("🗺️ Zones")
+
+Tab2:CreateButton({
+    Name = "⚡ Zone 1",
+    Callback = function()
+        tp(Vector3.new(-3172.89, -2036.87, 4020.55))
     end
+})
 
-    local z1 = CreateButton("Zone 1", 100)
-    z1.Parent = main
-    z1.MouseButton1Click:Connect(function() tp(Vector3.new(-3172.89, -2036.87, 4020.55)) end)
-
-    local z2 = CreateButton("Zone 2", 170)
-    z2.Parent = main
-    z2.MouseButton1Click:Connect(function() tp(Vector3.new(720.49, -3360.50, -1579.38)) end)
-
-    local z3 = CreateButton("Zone 3", 240)
-    z3.Parent = main
-    z3.MouseButton1Click:Connect(function() tp(Vector3.new(-13471.30, -11041.90, 167.35)) end)
-end
-
-----------------------------------------------------
--- FARM MENU
-----------------------------------------------------
-function openFarmMenu()
-    main:ClearAllChildren()
-
-    local t = title:Clone()
-    t.Parent = main
-    t.Text = "🌾 Farm Zones"
-
-    local x = close:Clone()
-    x.Parent = main
-    x.MouseButton1Click:Connect(function() gui:Destroy() end)
-
-    local function tp(v)
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(v)
+Tab2:CreateButton({
+    Name = "⚡ Zone 2",
+    Callback = function()
+        tp(Vector3.new(720.49, -3360.50, -1579.38))
     end
+})
 
-    local f1 = CreateButton("🔥 Farm Lv Best", 100)
-    f1.Parent = main
-    f1.MouseButton1Click:Connect(function() tp(Vector3.new(-3172.89, -2036.87, 4020.55)) end)
+Tab2:CreateButton({
+    Name = "⚡ Zone 3",
+    Callback = function()
+        tp(Vector3.new(-13471.30, -11041.90, 167.35))
+    end
+})
 
-    local f2 = CreateButton("💰 Farm Lumin Money", 170)
-    f2.Parent = main
-    f2.MouseButton1Click:Connect(function() tp(Vector3.new(720.49, -3360.50, -1579.38)) end)
-end
+Tab2:CreateButton({
+    Name = "⚡ Zone 4",
+    Callback = function()
+        tp(Vector3.new(-4253.68, -11200.55, 1795.63))
+    end
+})
 
--- MAIN BUTTONS BIND
-bZone.MouseButton1Click:Connect(openZoneMenu)
-bFarm.MouseButton1Click:Connect(openFarmMenu)
+Tab2:CreateSection("🐲 Boss")
+
+Tab2:CreateButton({
+    Name = "🐉 Scylla Boss",
+    Callback = function()
+        tp(Vector3.new(-2330.85, -11182.51, 7084.47))
+    end
+})
+
+-- ==========================================================
+-- 🌾 FARM TAB
+-- ==========================================================
+
+local Tab3 = Window:CreateTab("🌾 Farm", 4483362458)
+
+Tab3:CreateParagraph({
+    Title = "🌾 Auto Farm Teleports",
+    Content = "Fast farming locations"
+})
+
+Tab3:CreateSection("🔥 Level Grinding")
+
+Tab3:CreateButton({
+    Name = "🔥 Best Farm LV",
+    Callback = function()
+        tp(Vector3.new(1376.11, -603.59, 2337.22))
+    end
+})
+
+Tab3:CreateSection("💰 Money Farm")
+
+Tab3:CreateButton({
+    Name = "💰 Lumin Farm",
+    Callback = function()
+        tp(Vector3.new(-1090.32, -337.34, -4172.82))
+    end
+})
+
+Tab3:CreateSection("☀ Special Farm")
+
+Tab3:CreateButton({
+    Name = "☀ Sunstone",
+    Callback = function()
+        tp(Vector3.new(-919.42, 130.86, -1383.60))
+    end
+})
+
+Tab3:CreateButton({
+    Name = "🔴 Crimson",
+    Callback = function()
+        tp(Vector3.new(-1111.180908203125, -352.9007568359375, -4912.58740234375))
+    end
+})
+
+-- ==========================================================
+-- ✅ PREMIUM NOTIFY
+-- ==========================================================
+
+Rayfield:Notify({
+    Title = "✅ SDVT HUB Loaded",
+    Content = "Premium UI Initialized Successfully!",
+    Duration = 5
+})
+
+print("✅ SDVT HUB Premium UI Injected Successfully")
