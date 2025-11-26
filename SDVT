@@ -1,4 +1,4 @@
---// TP ADMIN ABUES - PRO VERSION FIXED AUTO STOP
+--// TP ADMIN ABUES - FULL PRO + AUTO TP ON + WALK ON WATER FIXED
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -6,14 +6,16 @@ local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-local looping = false
+local looping = true  -- AUTO TP luôn ON
+local walkingOnWater = true  -- AUTO ON
+local waterConnection = nil
 
 local TP_POS = Vector3.new(333.46, 133.62, 217.10)
 
 -- gethui support
 local parentGui = (gethui and gethui()) or game.CoreGui
 
--- HARD CLEAR UI CŨ
+-- CLEAR OLD UI
 for _, v in pairs(parentGui:GetChildren()) do
     if v.Name == "TpAdminAbuesUI" then
         v:Destroy()
@@ -28,7 +30,7 @@ gui.ResetOnSpawn = false
 
 -- Main Frame
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 260, 0, 160)
+frame.Size = UDim2.new(0, 260, 0, 220)
 frame.Position = UDim2.new(0.1, 0, 0.2, 0)
 frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.Active = true
@@ -68,16 +70,27 @@ closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 20
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
--- Toggle Button
+-- Toggle Button (hiển thị trạng thái ON)
 local toggleBtn = Instance.new("TextButton", frame)
 toggleBtn.Size = UDim2.new(0, 200, 0, 50)
 toggleBtn.Position = UDim2.new(0.5, -100, 0, 95)
-toggleBtn.Text = "STATUS : OFF"
-toggleBtn.BackgroundColor3 = Color3.fromRGB(150,0,0)
+toggleBtn.Text = "STATUS : ON"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(0,150,0)
 toggleBtn.TextColor3 = Color3.new(1,1,1)
 toggleBtn.Font = Enum.Font.GothamBold
 toggleBtn.TextSize = 16
 Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 12)
+
+-- Walk On Water Button
+local waterBtn = Instance.new("TextButton", frame)
+waterBtn.Size = UDim2.new(0,200,0,40)
+waterBtn.Position = UDim2.new(0.5,-100,0,160)
+waterBtn.Text = "WALKING ON WATER"
+waterBtn.BackgroundColor3 = Color3.fromRGB(0,100,255)
+waterBtn.TextColor3 = Color3.new(1,1,1)
+waterBtn.Font = Enum.Font.GothamBold
+waterBtn.TextSize = 16
+Instance.new("UICorner", waterBtn).CornerRadius = UDim.new(0,10)
 
 -- Overlay
 local overlay = Instance.new("Frame", gui)
@@ -110,18 +123,9 @@ closeOverlay.Font = Enum.Font.GothamBold
 closeOverlay.TextSize = 20
 closeOverlay.BackgroundColor3 = Color3.fromRGB(50,50,50)
 closeOverlay.TextColor3 = Color3.new(1,1,1)
-Instance.new("UICorner", closeOverlay).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", closeOverlay).CornerRadius = UDim.new(0,12)
 
 -- FUNCTIONS
-local function isNearTP()
-    local char = player.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        local pos = char.HumanoidRootPart.Position
-        return (pos - TP_POS).Magnitude < 5
-    end
-    return false
-end
-
 local function findNearestSea(fromPos)
     local nearestPos = nil
     local shortest = math.huge
@@ -153,35 +157,17 @@ local function teleportAndFaceSea()
     end
 end
 
--- EVENTS
-UserInputService.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if looping and input.UserInputType == Enum.UserInputType.MouseButton1 then
-        teleportAndFaceSea()
-    end
-end)
-
-local stopLoop = false
+-- AUTO TP LOOP
 task.spawn(function()
-    while not stopLoop do
-        task.wait(30)
+    while true do
+        task.wait(40)
         if looping then
             teleportAndFaceSea()
         end
     end
 end)
 
-toggleBtn.MouseButton1Click:Connect(function()
-    looping = not looping
-    if looping then
-        toggleBtn.Text = "STATUS : ON"
-        toggleBtn.BackgroundColor3 = Color3.fromRGB(0,150,0)
-    else
-        toggleBtn.Text = "STATUS : OFF"
-        toggleBtn.BackgroundColor3 = Color3.fromRGB(150,0,0)
-    end
-end)
-
+-- "+" Overlay
 plusBtn.MouseButton1Click:Connect(function()
     overlay.Visible = true
 end)
@@ -190,18 +176,45 @@ closeOverlay.MouseButton1Click:Connect(function()
     overlay.Visible = false
 end)
 
--- X BUTTON = DESTROY UI + STOP FUNCTIONS
+-- ❌ Close UI
 closeBtn.MouseButton1Click:Connect(function()
     looping = false
-    stopLoop = true
+    walkingOnWater = false
     overlay.Visible = false
+    if waterConnection then
+        waterConnection:Disconnect()
+        waterConnection = nil
+    end
+    local char = player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum then hum.PlatformStand = false end
     gui:Destroy()
 end)
 
--- REALTIME UPDATE
+-- WALK ON WATER AUTO ON
+local function startWalkOnWater()
+    local char = player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if char and hum and hrp then
+        hum.PlatformStand = true
+        waterConnection = RunService.Heartbeat:Connect(function()
+            local ray = Ray.new(hrp.Position, Vector3.new(0,-200,0))
+            local hit,pos = workspace:FindPartOnRay(ray, char)
+            if hit and (hit.Name:lower():find("water") or hit.Name:lower():find("sea") or hit.Name:lower():find("ocean")) then
+                hrp.CFrame = CFrame.new(hrp.Position.X, pos.Y + 2, hrp.Position.Z)
+            end
+        end)
+    end
+end
+
+startWalkOnWater()
+
+-- REALTIME OVERLAY
 RunService.RenderStepped:Connect(function()
     if overlay.Visible then
-        if isNearTP() then
+        local pos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
+        if pos and (pos - TP_POS).Magnitude < 5 then
             overlayText.Text = "YOU ARE IN CORRECT POSITION"
             overlayText.TextColor3 = Color3.fromRGB(0,255,100)
             statusLabel.Text = "STATUS : SAFE"
