@@ -1,14 +1,11 @@
---// TP ADMIN ABUES - FULL PRO + AUTO TP ON + WALK ON WATER + FACE SEA + CLEAR SURFACE
+--// TP ADMIN ABUES - FULL AUTO TP ON + FACE SEA + CLEAR SURFACE
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-local looping = true
-local walkingOnWater = false
-local waterConnection = nil
-
+local looping = true -- AUTO TP luôn ON
 local TP_POS = Vector3.new(333.46, 133.62, 217.10)
 local TP_RADIUS = 5 -- bán kính đứng tại TP_POS
 
@@ -22,10 +19,40 @@ for _, v in pairs(parentGui:GetChildren()) do
     end
 end
 
--- UI MAIN (giữ nguyên từ bản trước, bỏ qua phần UI code cho ngắn gọn)
+-- UI MAIN (giữ đơn giản)
 local gui = Instance.new("ScreenGui", parentGui)
 gui.Name = "TpAdminAbuesUI"
 gui.ResetOnSpawn = false
+
+-- Frame
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 260, 0, 80)
+frame.Position = UDim2.new(0.1, 0, 0.2, 0)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,14)
+
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.Text = "TP ADMIN ABUES"
+title.TextColor3 = Color3.fromRGB(0,200,255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 17
+
+-- ❌ Close Button
+local closeBtn = Instance.new("TextButton", frame)
+closeBtn.Size = UDim2.new(0, 40, 0, 40)
+closeBtn.Position = UDim2.new(1, -45, 0, 5)
+closeBtn.Text = "X"
+closeBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 20
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
 --========================
 -- FUNCTIONS
@@ -60,7 +87,7 @@ local function findNearestSea(fromPos)
     return nearestPos
 end
 
--- Teleport và quay mặt ra biển
+-- Teleport và quay mặt ra biển + xóa vật trên biển
 local function teleportAndFaceSea()
     local char = player.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
@@ -78,7 +105,6 @@ local function teleportAndFaceSea()
                 if obj:IsA("BasePart") then
                     local name = obj.Name:lower()
                     if (name:find("water") or name:find("sea") or name:find("ocean")) and (obj.Position - hrp.Position).Magnitude <= 20 then
-                        -- chỉ xóa các vật thể nhỏ trên biển (không phải nước)
                         if not obj:IsA(workspace.Terrain) then
                             pcall(function() obj:Destroy() end)
                         end
@@ -89,25 +115,8 @@ local function teleportAndFaceSea()
     end
 end
 
--- WALK ON WATER AUTO ON
-local function startWalkOnWater()
-    local char = player.Character
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")
-    if char and hum and hrp then
-        hum.PlatformStand = true
-        waterConnection = RunService.Heartbeat:Connect(function()
-            local ray = Ray.new(hrp.Position, Vector3.new(0,-200,0))
-            local hit,pos = workspace:FindPartOnRay(ray, char)
-            if hit and (hit.Name:lower():find("water") or hit.Name:lower():find("sea") or hit.Name:lower():find("ocean")) then
-                hrp.CFrame = CFrame.new(hrp.Position.X, pos.Y + 2, hrp.Position.Z)
-            end
-        end)
-    end
-end
-
 --========================
--- AUTO TP LOOP
+-- AUTO TP LOOP (luôn chạy khi script load)
 --========================
 task.spawn(function()
     while true do
@@ -118,4 +127,8 @@ task.spawn(function()
     end
 end)
 
-startWalkOnWater()
+-- ❌ Close UI
+closeBtn.MouseButton1Click:Connect(function()
+    looping = false
+    gui:Destroy()
+end)
