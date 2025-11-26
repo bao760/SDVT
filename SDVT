@@ -164,7 +164,7 @@ end)
 local stopLoop = false
 task.spawn(function()
     while not stopLoop do
-        task.wait(20)
+        task.wait(30)
         if looping then
             teleportAndFaceSea()
         end
