@@ -1,0 +1,216 @@
+--// TP ADMIN ABUES - PRO VERSION FIXED AUTO STOP
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local looping = false
+
+local TP_POS = Vector3.new(333.46, 133.62, 217.10)
+
+-- gethui support
+local parentGui = (gethui and gethui()) or game.CoreGui
+
+-- HARD CLEAR UI CŨ
+for _, v in pairs(parentGui:GetChildren()) do
+    if v.Name == "TpAdminAbuesUI" then
+        v:Destroy()
+    end
+end
+
+-- UI MAIN
+local gui = Instance.new("ScreenGui")
+gui.Name = "TpAdminAbuesUI"
+gui.Parent = parentGui
+gui.ResetOnSpawn = false
+
+-- Main Frame
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 260, 0, 160)
+frame.Position = UDim2.new(0.1, 0, 0.2, 0)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,14)
+Instance.new("UIStroke", frame).Color = Color3.fromRGB(90,90,90)
+
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, -10, 0, 40)
+title.Position = UDim2.new(0,5,0,5)
+title.Text = "TP ADMIN ABUES"
+title.TextColor3 = Color3.fromRGB(0,200,255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 17
+
+-- "+" Button
+local plusBtn = Instance.new("TextButton", frame)
+plusBtn.Size = UDim2.new(0, 40, 0, 40)
+plusBtn.Position = UDim2.new(1, -90, 0, 5)
+plusBtn.Text = "+"
+plusBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+plusBtn.TextColor3 = Color3.new(1,1,1)
+plusBtn.Font = Enum.Font.GothamBold
+plusBtn.TextSize = 22
+Instance.new("UICorner", plusBtn).CornerRadius = UDim.new(0, 8)
+
+-- ❌ Close Button
+local closeBtn = Instance.new("TextButton", frame)
+closeBtn.Size = UDim2.new(0, 40, 0, 40)
+closeBtn.Position = UDim2.new(1, -45, 0, 5)
+closeBtn.Text = "X"
+closeBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 20
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
+
+-- Toggle Button
+local toggleBtn = Instance.new("TextButton", frame)
+toggleBtn.Size = UDim2.new(0, 200, 0, 50)
+toggleBtn.Position = UDim2.new(0.5, -100, 0, 95)
+toggleBtn.Text = "STATUS : OFF"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(150,0,0)
+toggleBtn.TextColor3 = Color3.new(1,1,1)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 16
+Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 12)
+
+-- Overlay
+local overlay = Instance.new("Frame", gui)
+overlay.Size = UDim2.new(1,0,1,0)
+overlay.BackgroundColor3 = Color3.fromRGB(0,0,0)
+overlay.BackgroundTransparency = 0.35
+overlay.Visible = false
+
+local overlayText = Instance.new("TextLabel", overlay)
+overlayText.Size = UDim2.new(1,0,0.4,0)
+overlayText.Position = UDim2.new(0,0,0.3,0)
+overlayText.Text = "WAITING..."
+overlayText.TextColor3 = Color3.new(1,1,1)
+overlayText.BackgroundTransparency = 1
+overlayText.Font = Enum.Font.GothamBold
+overlayText.TextSize = 34
+
+local statusLabel = Instance.new("TextLabel", overlay)
+statusLabel.Size = UDim2.new(1,0,0.2,0)
+statusLabel.Position = UDim2.new(0,0,0.55,0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Font = Enum.Font.GothamBold
+statusLabel.TextSize = 22
+
+local closeOverlay = Instance.new("TextButton", overlay)
+closeOverlay.Size = UDim2.new(0,220,0,50)
+closeOverlay.Position = UDim2.new(0.5,-110,0.75,0)
+closeOverlay.Text = "CLOSE"
+closeOverlay.Font = Enum.Font.GothamBold
+closeOverlay.TextSize = 20
+closeOverlay.BackgroundColor3 = Color3.fromRGB(50,50,50)
+closeOverlay.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", closeOverlay).CornerRadius = UDim.new(0, 12)
+
+-- FUNCTIONS
+local function isNearTP()
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        local pos = char.HumanoidRootPart.Position
+        return (pos - TP_POS).Magnitude < 5
+    end
+    return false
+end
+
+local function findNearestSea(fromPos)
+    local nearestPos = nil
+    local shortest = math.huge
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            local name = obj.Name:lower()
+            if name:find("water") or name:find("sea") or name:find("ocean") then
+                local dist = (obj.Position - fromPos).Magnitude
+                if dist < shortest then
+                    shortest = dist
+                    nearestPos = obj.Position
+                end
+            end
+        end
+    end
+    return nearestPos
+end
+
+local function teleportAndFaceSea()
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        local hrp = char.HumanoidRootPart
+        hrp.CFrame = CFrame.new(TP_POS)
+        task.wait(0.1)
+        local seaPos = findNearestSea(hrp.Position)
+        if seaPos then
+            hrp.CFrame = CFrame.new(hrp.Position, seaPos)
+        end
+    end
+end
+
+-- EVENTS
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if looping and input.UserInputType == Enum.UserInputType.MouseButton1 then
+        teleportAndFaceSea()
+    end
+end)
+
+local stopLoop = false
+task.spawn(function()
+    while not stopLoop do
+        task.wait(20)
+        if looping then
+            teleportAndFaceSea()
+        end
+    end
+end)
+
+toggleBtn.MouseButton1Click:Connect(function()
+    looping = not looping
+    if looping then
+        toggleBtn.Text = "STATUS : ON"
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(0,150,0)
+    else
+        toggleBtn.Text = "STATUS : OFF"
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(150,0,0)
+    end
+end)
+
+plusBtn.MouseButton1Click:Connect(function()
+    overlay.Visible = true
+end)
+
+closeOverlay.MouseButton1Click:Connect(function()
+    overlay.Visible = false
+end)
+
+-- X BUTTON = DESTROY UI + STOP FUNCTIONS
+closeBtn.MouseButton1Click:Connect(function()
+    looping = false
+    stopLoop = true
+    overlay.Visible = false
+    gui:Destroy()
+end)
+
+-- REALTIME UPDATE
+RunService.RenderStepped:Connect(function()
+    if overlay.Visible then
+        if isNearTP() then
+            overlayText.Text = "YOU ARE IN CORRECT POSITION"
+            overlayText.TextColor3 = Color3.fromRGB(0,255,100)
+            statusLabel.Text = "STATUS : SAFE"
+            statusLabel.TextColor3 = Color3.fromRGB(0,255,0)
+        else
+            overlayText.Text = "YOU ARE NOT IN THIS POSITION !!!"
+            overlayText.TextColor3 = Color3.fromRGB(255,50,50)
+            statusLabel.Text = "STATUS : ERROR"
+            statusLabel.TextColor3 = Color3.fromRGB(255,0,0)
+        end
+    end
+end)
