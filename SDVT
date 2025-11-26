@@ -7,7 +7,7 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local looping = true  -- AUTO TP luôn ON
-local walkingOnWater = true  -- AUTO ON
+local walkingOnWater = false  -- AUTO ON
 local waterConnection = nil
 
 local TP_POS = Vector3.new(333.46, 133.62, 217.10)
