@@ -6,7 +6,7 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local looping = true
-local walkingOnWater = true
+local walkingOnWater = false
 local waterConnection = nil
 
 local TP_POS = Vector3.new(333.46, 133.62, 217.10)
